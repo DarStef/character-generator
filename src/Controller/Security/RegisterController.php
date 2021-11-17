@@ -1,0 +1,59 @@
+<?php declare(strict_types=1);
+
+namespace App\Controller\Security;
+
+use App\Entity\User;
+use App\Form\Type\UserType;
+use App\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class RegisterController extends AbstractController
+{
+    private UserRepository $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+    #[Route('/security/register', methods: 'POST')]
+    public function register(Request $request): JsonResponse
+    {
+        $user = new User();
+        $form = $this->createForm(UserType::class, $user);
+        $data = json_decode($request->getContent(), true);
+        $form->submit($data);
+
+        if (!($form->isSubmitted() && $form->isValid())) {
+            return $this->json([
+                'errors' => $this->getFormErrors($form),
+            ],
+                Response::HTTP_BAD_REQUEST);
+        }
+        $user = $form->getData();
+        $this->userRepository->add($user);
+        return $this->json([
+            'success' => ['message' => 'User registered'],
+        ],
+            Response::HTTP_CREATED);
+    }
+
+    private function getFormErrors(FormInterface $form): array
+    {
+        $errors = [];
+        foreach ($form as $child) {
+            if (!$child->isValid()) {
+                foreach ($child->getErrors() as $error) {
+                    $errors[$child->getName()][] = $error->getMessage();
+                }
+            }
+        }
+
+        return $errors;
+    }
+}
