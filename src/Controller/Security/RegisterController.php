@@ -11,17 +11,21 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class RegisterController extends AbstractController
 {
     private UserRepository $userRepository;
+    private UserPasswordHasherInterface $passwordHasher;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository, UserPasswordHasherInterface $passwordHasher)
     {
         $this->userRepository = $userRepository;
+        $this->passwordHasher = $passwordHasher;
     }
-    #[Route('/security/register', methods: 'POST')]
+
+    #[Route('/security/register', name: 'register', methods: 'POST')]
     public function register(Request $request): JsonResponse
     {
         $user = new User();
@@ -35,7 +39,10 @@ class RegisterController extends AbstractController
             ],
                 Response::HTTP_BAD_REQUEST);
         }
+        /** @var User $user */
         $user = $form->getData();
+        $hashPassword = $this->passwordHasher->hashPassword($user, $user->getPassword());
+        $user->setPassword($hashPassword);
         $this->userRepository->add($user);
         return $this->json([
             'success' => ['message' => 'User registered'],
@@ -47,6 +54,9 @@ class RegisterController extends AbstractController
     {
         $errors = [];
         foreach ($form as $child) {
+            foreach ($form->getErrors() as $error) {
+                $errors['form'][] = $error->getMessage();
+            }
             if (!$child->isValid()) {
                 foreach ($child->getErrors() as $error) {
                     $errors[$child->getName()][] = $error->getMessage();

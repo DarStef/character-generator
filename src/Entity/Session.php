@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\SessionRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SessionRepository::class)]
 class Session
@@ -13,7 +12,6 @@ class Session
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    #[Assert\Unique]
     private int $id;
 
     #[ORM\Column(type: "string", length: 255, nullable: true)]
