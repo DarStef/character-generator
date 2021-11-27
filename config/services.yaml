@@ -27,3 +27,8 @@ services:
     App\Repository\UserRepository:
         arguments:
             $em: '@doctrine.orm.default_entity_manager'
+
+    App\Repository\SessionRepository:
+      arguments:
+        $em: '@doctrine.orm.default_entity_manager'
+
