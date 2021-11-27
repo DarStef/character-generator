@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -11,9 +13,11 @@ class User
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
+    #[Assert\Unique]
     private int $id;
-
+    
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\Unique]
     private string $username;
 
     #[ORM\Column(type: "string", length: 255)]
