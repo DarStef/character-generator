@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CharacterRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
@@ -61,6 +63,14 @@ class Character
 
     #[ORM\Column(type: 'integer')]
     private int $hitPoints;
+
+    #[ORM\OneToMany(mappedBy: 'character', targetEntity: Ability::class)]
+    private Collection $abilities;
+
+    public function __construct()
+    {
+        $this->abilities=new ArrayCollection();
+    }
 
 
     public function getId(): ?int
@@ -230,5 +240,15 @@ class Character
     public function setHitPoints(int $hitPoints): void
     {
         $this->hitPoints = $hitPoints;
+    }
+
+    public function getAbilities(): ArrayCollection|Collection
+    {
+        return $this->abilities;
+    }
+
+    public function setAbilities(ArrayCollection|Collection $abilities): void
+    {
+        $this->abilities = $abilities;
     }
 }
