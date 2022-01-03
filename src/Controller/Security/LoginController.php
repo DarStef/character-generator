@@ -36,7 +36,7 @@ class LoginController extends AbstractController
         }
         $token = $this->addSession($user);
         return $this->json([
-            'success' => [
+            'login success' => [
                 'user' => $user->getUserIdentifier(),
                 'token' => $token,
             ],
