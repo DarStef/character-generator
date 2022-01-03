@@ -67,9 +67,13 @@ class Character
     #[ORM\OneToMany(mappedBy: 'character', targetEntity: Ability::class)]
     private Collection $abilities;
 
+    #[ORM\OneToMany(mappedBy: 'character', targetEntity: Item::class)]
+    private Collection $items;
+
     public function __construct()
     {
-        $this->abilities=new ArrayCollection();
+        $this->abilities = new ArrayCollection();
+        $this->items = new ArrayCollection();
     }
 
 
@@ -250,5 +254,15 @@ class Character
     public function setAbilities(ArrayCollection|Collection $abilities): void
     {
         $this->abilities = $abilities;
+    }
+
+    public function getItems(): Collection
+    {
+        return $this->items;
+    }
+
+    public function setItems(Collection $items): void
+    {
+        $this->items = $items;
     }
 }

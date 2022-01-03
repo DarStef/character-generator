@@ -11,7 +11,7 @@ class Ability
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $name;
@@ -22,8 +22,6 @@ class Ability
     #[ORM\ManyToOne(targetEntity: Character::class, inversedBy: 'abilities')]
     #[ORM\JoinColumn(name: 'character_id', referencedColumnName: 'id')]
     private ?Character $character = null;
-
-
 
     public function getId(): ?int
     {
