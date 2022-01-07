@@ -8,4 +8,8 @@ enum Profession: string
     case Liberian2 = 'Bibliotekarz2';
     case Liberian3 = 'Bibliotekarz3';
 
+    public static function rand(): self
+    {
+        return self::cases()[random_int(0, count(self::cases()))-1];
+    }
 }

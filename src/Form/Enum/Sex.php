@@ -4,8 +4,15 @@ namespace App\Form\Enum;
 
 enum Sex: string
 {
-    case Men = 'M';
-    case Women  = 'W';
+    case Male = 'M';
+    case Female = 'W';
     case None = 'N';
-    case Undefined = 'U';
+
+    public static function rand(): self
+    {
+        if (random_int(0, 1) === 0) {
+            return self::Male;
+        }
+        return self::Female;
+    }
 }
