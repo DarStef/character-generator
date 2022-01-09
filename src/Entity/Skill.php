@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\AbilityRepository;
+use App\Repository\SkillRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: AbilityRepository::class)]
-class Ability
+#[ORM\Entity(repositoryClass: SkillRepository::class)]
+class Skill
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -18,10 +18,6 @@ class Ability
 
     #[ORM\Column(type: 'integer')]
     private int $value;
-    
-    #[ORM\ManyToOne(targetEntity: Character::class, inversedBy: 'abilities')]
-    #[ORM\JoinColumn(name: 'character_id', referencedColumnName: 'id')]
-    private ?Character $character = null;
 
     public function getId(): ?int
     {
@@ -50,15 +46,5 @@ class Ability
         $this->value = $value;
 
         return $this;
-    }
-
-    public function getCharacter(): ?Character
-    {
-        return $this->character;
-    }
-
-    public function setCharacter(?Character $character): void
-    {
-        $this->character = $character;
     }
 }

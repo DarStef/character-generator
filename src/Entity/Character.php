@@ -69,15 +69,15 @@ class Character
     #[ORM\Column(type: 'integer')]
     private int $hitPoints;
 
-    #[ORM\OneToMany(mappedBy: 'character', targetEntity: Ability::class)]
-    private Collection $abilities;
+    #[ORM\OneToMany(mappedBy: 'character', targetEntity: CharacterSkill::class)]
+    private Collection $skills;
 
     #[ORM\OneToMany(mappedBy: 'character', targetEntity: Item::class)]
     private Collection $items;
 
     public function __construct()
     {
-        $this->abilities = new ArrayCollection();
+        $this->skills = new ArrayCollection();
         $this->items = new ArrayCollection();
     }
 
@@ -350,14 +350,14 @@ class Character
         return $this;
     }
 
-    public function getAbilities(): ArrayCollection|Collection
+    public function getSkills(): ArrayCollection|Collection
     {
-        return $this->abilities;
+        return $this->skills;
     }
 
-    public function setAbilities(ArrayCollection|Collection $abilities): self
+    public function setSkills(ArrayCollection|Collection $skills): self
     {
-        $this->abilities = $abilities;
+        $this->skills = $skills;
 
         return $this;
     }

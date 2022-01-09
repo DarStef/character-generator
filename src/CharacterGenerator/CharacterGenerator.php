@@ -20,7 +20,7 @@ class CharacterGenerator
     {
         $this->character = $characterDTO->toEntity();
 
-        $this->setAbilities();
+        $this->setCharacteristics();
 
         $this->ageFactor();
 
@@ -29,7 +29,7 @@ class CharacterGenerator
         return $this->character;
     }
 
-    private function setAbilities(): void
+    private function setCharacteristics(): void
     {
         $this->character->setAge(random_int(20, 59))
             ->setStrength(Dice::d6(3) * self::MULTIPLIER)

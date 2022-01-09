@@ -2,21 +2,21 @@
 
 namespace App\Repository;
 
-use App\Entity\Ability;
+use App\Entity\CharacterSkill;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Ability|null find($id, $lockMode = null, $lockVersion = null)
- * @method Ability|null findOneBy(array $criteria, array $orderBy = null)
- * @method Ability[]    findAll()
- * @method Ability[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method CharacterSkill|null find($id, $lockMode = null, $lockVersion = null)
+ * @method CharacterSkill|null findOneBy(array $criteria, array $orderBy = null)
+ * @method CharacterSkill[]    findAll()
+ * @method CharacterSkill[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AbilityRepository extends ServiceEntityRepository
+class CharacterSkillRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Ability::class);
+        parent::__construct($registry, CharacterSkill::class);
     }
 
     // /**
