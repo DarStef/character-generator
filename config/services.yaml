@@ -32,3 +32,6 @@ services:
       arguments:
         $em: '@doctrine.orm.default_entity_manager'
 
+    App\Repository\CharacterRepository:
+        arguments:
+            $em: '@doctrine.orm.default_entity_manager'

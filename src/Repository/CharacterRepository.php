@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Character;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectManager;
 
 /**
  * @method Character|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,9 +16,18 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CharacterRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private ObjectManager $em;
+
+    public function __construct(ManagerRegistry $registry, ObjectManager $em)
     {
         parent::__construct($registry, Character::class);
+        $this->em = $em;
+    }
+
+    public function add(Character $character): void
+    {
+        $this->em->persist($character);
+        $this->em->flush();
     }
 
     // /**

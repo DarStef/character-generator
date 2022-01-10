@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Json;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class CreateCharacterController extends AbstractController
 {
@@ -26,7 +26,7 @@ class CreateCharacterController extends AbstractController
     }
 
     #[Route('/character/create', name: 'character_create', methods: 'POST')]
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, SerializerInterface $serializer): JsonResponse
     {
         $character = new Character();
         $form = $this->createForm(CharacterType::class, $character);
@@ -43,12 +43,12 @@ class CreateCharacterController extends AbstractController
         $character = $form->getData();
         $character = $this->characterGenerator->generate($character);
 
-        return $this->json($character);
+        return $this->json($serializer->serialize($character, 'json', ['ignored_attributes' => ['character']]));
     }
 
     protected function json(mixed $data, int $status = 200, array $headers = [], array $context = []): JsonResponse
     {
-        $response = parent::json($data, $status, $headers, $context);
+        $response = new JsonResponse(json_decode($data) ,$status, $headers);
         $response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         return $response;
     }

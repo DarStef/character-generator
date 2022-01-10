@@ -2,10 +2,11 @@
 
 namespace App\Form\Type;
 
+use App\Entity\Profession;
 use App\Form\DTO\Character;
-use App\Form\Enum\Profession;
 use App\Form\Enum\Sex;
 use App\Form\Enum\Type;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -22,8 +23,9 @@ class CharacterType extends AbstractType
             ->add('sex', EnumType::class, [
                 'class' => Sex::class,
             ])
-            ->add('profession', EnumType::class, [
+            ->add('profession', EntityType::class, [
                 'class' => Profession::class,
+                'choice_label' => 'name',
             ])
             ->add('type', EnumType::class, [
                 'class' => Type::class,

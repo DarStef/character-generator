@@ -1,0 +1,6 @@
+doctrine_native_enums:
+  enum_types:
+    App\Form\Enum\Sex: ~
+    App\CharacterGenerator\Enum\FemaleName: ~
+    App\CharacterGenerator\Enum\MaleName: ~
+    App\CharacterGenerator\Enum\Surname: ~

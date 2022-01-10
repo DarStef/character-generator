@@ -5,16 +5,17 @@ namespace App\Entity;
 use App\CharacterGenerator\Enum\FemaleName;
 use App\CharacterGenerator\Enum\MaleName;
 use App\CharacterGenerator\Enum\Surname;
-use App\Form\Enum\Profession;
 use App\Form\Enum\Sex;
 use App\Repository\CharacterRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
+
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
 #[ORM\Table(name: '`character`')]
-class Character
+class Character //implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -27,14 +28,11 @@ class Character
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private Surname|string|null $surname;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private Profession $profession;
-
     #[ORM\Column(type: 'integer')]
     private int $age;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private Sex $sex;
+    #[ORM\Column(type: Sex::class)]
+    private ?Sex $sex;
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description;
@@ -43,7 +41,7 @@ class Character
     private int $strength;
 
     #[ORM\Column(type: 'integer')]
-    private int $condition;
+    private int $characterCondition;
 
     #[ORM\Column(type: 'integer')]
     private int $size;
@@ -69,11 +67,16 @@ class Character
     #[ORM\Column(type: 'integer')]
     private int $hitPoints;
 
-    #[ORM\OneToMany(mappedBy: 'character', targetEntity: CharacterSkill::class)]
+    #[ORM\ManyToOne(targetEntity: Profession::class)]
+    #[ORM\JoinColumn(name: 'profession_id', referencedColumnName: 'id')]
+    private ?Profession $profession = null;
+
+    #[ORM\OneToMany(mappedBy: 'character', targetEntity: CharacterSkill::class, cascade: ['persist'])]
     private Collection $skills;
 
     #[ORM\OneToMany(mappedBy: 'character', targetEntity: Item::class)]
     private Collection $items;
+
 
     public function __construct()
     {
@@ -111,12 +114,12 @@ class Character
         return $this;
     }
 
-    public function getProfession(): Profession
+    public function getProfession(): ?Profession
     {
         return $this->profession;
     }
 
-    public function setProfession(Profession $profession): self
+    public function setProfession(?Profession $profession): self
     {
         $this->profession = $profession;
 
@@ -178,21 +181,21 @@ class Character
         return $this;
     }
 
-    public function getCondition(): int
+    public function getCharacterCondition(): int
     {
-        return $this->condition;
+        return $this->characterCondition;
     }
 
-    public function setCondition(int $condition): self
+    public function setCharacterCondition(int $characterCondition): self
     {
-        $this->condition = $condition;
+        $this->characterCondition = $characterCondition;
 
         return $this;
     }
 
     public function addCondition(int $condition): self
     {
-        $this->condition = $this->condition + $condition;
+        $this->characterCondition = $this->characterCondition + $condition;
 
         return $this;
     }
@@ -362,6 +365,16 @@ class Character
         return $this;
     }
 
+    public function addSkill(CharacterSkill $skill): self
+    {
+        if ($this->skills->contains($skill)) {
+            return $this;
+        }
+        $skill->setCharacter($this);
+        $this->skills->add($skill);
+        return $this;
+    }
+
     public function getItems(): Collection
     {
         return $this->items;
@@ -373,4 +386,28 @@ class Character
 
         return $this;
     }
+
+//    public function jsonSerialize(): array
+//    {
+//        return [
+//          'id' => $this->id,
+//            'name' => $this->name,
+//            'surname' => $this->surname,
+//            'age' => $this->age,
+//            'sex' => $this->sex,
+//            'description' => $this->description,
+//            'strength' => $this->strength,
+//            'condition' => $this->characterCondition,
+//            'size' => $this->size,
+//            'dexterity' => $this->dexterity,
+//            'appearance' => $this->appearance,
+//            'intelligence' => $this->intelligence,
+//            'education' => $this->education,
+//            'sanity' => $this->sanity,
+//            'power' => $this->power,
+//            'hit_points' => $this->hitPoints,
+//            'profession' => $this->profession->getName(),
+//            'skills' => $this->profession->getSkills()->toArray(),
+//        ];
+//    }
 }

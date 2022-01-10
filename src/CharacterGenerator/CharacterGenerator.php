@@ -7,14 +7,25 @@ use App\CharacterGenerator\Enum\FemaleName;
 use App\CharacterGenerator\Enum\MaleName;
 use App\CharacterGenerator\Enum\Surname;
 use App\Entity\Character;
+use App\Entity\CharacterSkill;
+use App\Entity\Skill;
 use App\Form\DTO\Character as CharacterDTO;
-use App\Form\Enum\Profession;
 use App\Form\Enum\Sex;
+use App\Repository\CharacterRepository;
+use App\Repository\ProfessionRepository;
 
 class CharacterGenerator
 {
     private const MULTIPLIER = 5;
     private ?Character $character = null;
+    private ProfessionRepository $professionRepository;
+    private CharacterRepository $characterRepository;
+
+    public function __construct(ProfessionRepository $professionRepository, CharacterRepository $characterRepository)
+    {
+        $this->professionRepository = $professionRepository;
+        $this->characterRepository = $characterRepository;
+    }
 
     public function generate(CharacterDTO $characterDTO): Character
     {
@@ -24,7 +35,13 @@ class CharacterGenerator
 
         $this->ageFactor();
 
-        $this->setHitPoints();
+        $this->setHitPointsAndSanity();
+
+        $this->setCharacterSkills();
+
+        $this->character->setDescription('');
+
+        $this->characterRepository->add($this->character);
 
         return $this->character;
     }
@@ -33,7 +50,7 @@ class CharacterGenerator
     {
         $this->character->setAge(random_int(20, 59))
             ->setStrength(Dice::d6(3) * self::MULTIPLIER)
-            ->setCondition(Dice::d6(3) * self::MULTIPLIER)
+            ->setCharacterCondition(Dice::d6(3) * self::MULTIPLIER)
             ->setSize((Dice::d6(2) + 6) * self::MULTIPLIER)
             ->setDexterity(Dice::d6(3) * self::MULTIPLIER)
             ->setAppearance(Dice::d6(3) * self::MULTIPLIER)
@@ -80,9 +97,34 @@ class CharacterGenerator
         $this->character->addAppearance(-$value);
     }
 
-    private function setHitPoints(): void
+    private function setHitPointsAndSanity(): void
     {
-        $this->character->setHitPoints((int)floor(($this->character->getCondition() + $this->character->getSize()) / 10));
+        $this->character->setHitPoints((int)floor(($this->character->getCharacterCondition() + $this->character->getSize()) / 10));
+        $this->character->setSanity($this->character->getPower());
+    }
+
+    private function setCharacterSkills(): void
+    {
+        if($this->character->getProfession() === null) {
+            $professions = $this->professionRepository->findAll();
+            $profession = $professions[random_int(0, count($professions) - 1)];
+            $this->character->setProfession($profession);
+        }
+        $points = $this->character->getEducation() * 4;
+        /** @var Skill $skill */
+        foreach ($profession->getSkills() as $skill){
+            $characterSkill = new CharacterSkill();
+            $characterSkill->setSkill($skill);
+            $value = random_int(0,$points);
+            $points-=$value;
+            $value += $skill->getValue();
+            if($value>=100){
+                $points += abs(100 - $value);
+                $value = 100;
+            }
+            $characterSkill->setValue($value);
+            $this->character->addSkill($characterSkill);
+        }
     }
 
 
