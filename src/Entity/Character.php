@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
@@ -35,7 +36,7 @@ class Character //implements JsonSerializable
     private ?Sex $sex;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description;
+    private ?string $description = null;
 
     #[ORM\Column(type: 'integer')]
     private int $strength;
@@ -67,12 +68,20 @@ class Character //implements JsonSerializable
     #[ORM\Column(type: 'integer')]
     private int $hitPoints;
 
+    #[ORM\Column(type: 'integer')]
+    private int $magicPoint;
+
     #[ORM\ManyToOne(targetEntity: Profession::class)]
     #[ORM\JoinColumn(name: 'profession_id', referencedColumnName: 'id')]
     private ?Profession $profession = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    private ?User $user = null;
+
     #[ORM\OneToMany(mappedBy: 'character', targetEntity: CharacterSkill::class, cascade: ['persist'])]
     private Collection $skills;
+
 
     #[ORM\OneToMany(mappedBy: 'character', targetEntity: Item::class)]
     private Collection $items;
@@ -387,27 +396,23 @@ class Character //implements JsonSerializable
         return $this;
     }
 
-//    public function jsonSerialize(): array
-//    {
-//        return [
-//          'id' => $this->id,
-//            'name' => $this->name,
-//            'surname' => $this->surname,
-//            'age' => $this->age,
-//            'sex' => $this->sex,
-//            'description' => $this->description,
-//            'strength' => $this->strength,
-//            'condition' => $this->characterCondition,
-//            'size' => $this->size,
-//            'dexterity' => $this->dexterity,
-//            'appearance' => $this->appearance,
-//            'intelligence' => $this->intelligence,
-//            'education' => $this->education,
-//            'sanity' => $this->sanity,
-//            'power' => $this->power,
-//            'hit_points' => $this->hitPoints,
-//            'profession' => $this->profession->getName(),
-//            'skills' => $this->profession->getSkills()->toArray(),
-//        ];
-//    }
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): void
+    {
+        $this->user = $user;
+    }
+
+    public function getMagicPoint(): int
+    {
+        return $this->magicPoint;
+    }
+
+    public function setMagicPoint(int $magicPoint): void
+    {
+        $this->magicPoint = $magicPoint;
+    }
 }

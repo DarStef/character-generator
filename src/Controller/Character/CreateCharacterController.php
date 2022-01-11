@@ -3,10 +3,8 @@
 namespace App\Controller\Character;
 
 use App\CharacterGenerator\CharacterGenerator;
-use App\CharacterGenerator\Enum\FemaleName;
 use App\Entity\User;
 use App\Form\DTO\Character;
-use App\Form\Enum\Sex;
 use App\Form\Type\CharacterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -25,13 +23,16 @@ class CreateCharacterController extends AbstractController
         $this->characterGenerator = $characterGenerator;
     }
 
-    #[Route('/character/create', name: 'character_create', methods: 'POST')]
+    #[Route('/character', name: 'character_create', methods: 'POST')]
     public function index(Request $request, SerializerInterface $serializer): JsonResponse
     {
         $character = new Character();
         $form = $this->createForm(CharacterType::class, $character);
         $data = json_decode($request->getContent(), true);
         $form->submit($data);
+
+        /** @var User|null $user */
+        $user = $this->getUser();
 
         if (!($form->isSubmitted() && $form->isValid())) {
             return $this->json([
@@ -41,9 +42,9 @@ class CreateCharacterController extends AbstractController
         }
         /** @var Character $character */
         $character = $form->getData();
-        $character = $this->characterGenerator->generate($character);
+        $character = $this->characterGenerator->generate($character, $user);
 
-        return $this->json($serializer->serialize($character, 'json', ['ignored_attributes' => ['character']]));
+        return $this->json($serializer->serialize($character, 'json', ['ignored_attributes' => ['character', 'user']]));
     }
 
     protected function json(mixed $data, int $status = 200, array $headers = [], array $context = []): JsonResponse

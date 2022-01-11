@@ -9,6 +9,7 @@ use App\CharacterGenerator\Enum\Surname;
 use App\Entity\Character;
 use App\Entity\CharacterSkill;
 use App\Entity\Skill;
+use App\Entity\User;
 use App\Form\DTO\Character as CharacterDTO;
 use App\Form\Enum\Sex;
 use App\Repository\CharacterRepository;
@@ -27,7 +28,7 @@ class CharacterGenerator
         $this->characterRepository = $characterRepository;
     }
 
-    public function generate(CharacterDTO $characterDTO): Character
+    public function generate(CharacterDTO $characterDTO, User $user): Character
     {
         $this->character = $characterDTO->toEntity();
 
@@ -35,12 +36,11 @@ class CharacterGenerator
 
         $this->ageFactor();
 
-        $this->setHitPointsAndSanity();
+        $this->setDependentAtributes();
 
         $this->setCharacterSkills();
 
-        $this->character->setDescription('');
-
+        $this->character->setUser($user);
         $this->characterRepository->add($this->character);
 
         return $this->character;
@@ -97,10 +97,11 @@ class CharacterGenerator
         $this->character->addAppearance(-$value);
     }
 
-    private function setHitPointsAndSanity(): void
+    private function setDependentAtributes(): void
     {
         $this->character->setHitPoints((int)floor(($this->character->getCharacterCondition() + $this->character->getSize()) / 10));
         $this->character->setSanity($this->character->getPower());
+        $this->character->setMagicPoint((int)floor($this->character->getPower()/5));
     }
 
     private function setCharacterSkills(): void
