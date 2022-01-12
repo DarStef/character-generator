@@ -3,7 +3,9 @@
 namespace App\Controller\Character;
 
 use App\Entity\Character;
+use App\Entity\CharacterSkill;
 use App\Entity\User;
+use App\Form\Type\CharacterSkillType;
 use App\Form\Type\CharacterType;
 use App\Form\Type\EditCharacterType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,25 +17,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class EditCharacterController extends AbstractController
+class EditCharacterSkillController extends AbstractController
 {
-    #[Route('/character/{id}', name: 'character_update', methods: 'PUT')]
-    public function index(Character $character, Request $request, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
+    #[Route('/character/skill/{id}', name: 'character_skill_update', methods: 'PUT')]
+    public function index(CharacterSkill $characterSkill, Request $request, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
 
-        if($character->getUser()->getId() !== $user->getId()){
+        if($characterSkill->getCharacter()->getUser()->getId() !== $user->getId()) {
             return $this->json([
                 'errors' => 'invalid user'
             ]);
         }
-
-
-        $form = $this->createForm(EditCharacterType::class, $character);
+        $form = $this->createForm(CharacterSkillType::class, $characterSkill);
         $data = json_decode($request->getContent(), true);
         $form->submit($data);
-
 
         if (!($form->isSubmitted() && $form->isValid())) {
             return $this->json([
@@ -41,12 +40,12 @@ class EditCharacterController extends AbstractController
             ],
                 Response::HTTP_BAD_REQUEST);
         }
-        /** @var Character $character */
-        $character = $form->getData();
+        /** @var CharacterSkill $characterSkill */
+        $characterSkill = $form->getData();
 
         $em->flush();
 
-        return $this->json($serializer->serialize($character, 'json', ['ignored_attributes' => ['user', 'character']]));
+        return $this->json($serializer->serialize($characterSkill, 'json', ['ignored_attributes' => ['character']]));
     }
 
     private function getFormErrors(FormInterface $form): array
