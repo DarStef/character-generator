@@ -79,7 +79,7 @@ class Character //implements JsonSerializable
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private ?User $user = null;
 
-    #[ORM\OneToMany(mappedBy: 'character', targetEntity: CharacterSkill::class, cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'character', targetEntity: CharacterSkill::class, cascade: ['persist', 'remove'])]
     private Collection $skills;
 
 
