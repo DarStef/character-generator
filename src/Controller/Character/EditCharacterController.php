@@ -2,10 +2,11 @@
 
 namespace App\Controller\Character;
 
-use App\CharacterGenerator\CharacterGenerator;
+use App\Entity\Character;
 use App\Entity\User;
-use App\Form\DTO\Character;
 use App\Form\Type\CharacterType;
+use App\Form\Type\EditCharacterType;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,19 +15,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class CreateCharacterController extends AbstractController
+class EditCharacterController extends AbstractController
 {
-    public function __construct(
-        private CharacterGenerator $characterGenerator,
-    ) {
-
-    }
-
-    #[Route('/character', name: 'character_create', methods: 'POST')]
-    public function index(Request $request, SerializerInterface $serializer): JsonResponse
+    #[Route('/character/{id}', name: 'character_update', methods: 'PUT')]
+    public function index(Character $character, Request $request, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
     {
-        $character = new Character();
-        $form = $this->createForm(CharacterType::class, $character);
+        /** @var User|null $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(EditCharacterType::class, $character);
         $data = json_decode($request->getContent(), true);
         $form->submit($data);
 
@@ -41,16 +38,10 @@ class CreateCharacterController extends AbstractController
         }
         /** @var Character $character */
         $character = $form->getData();
-        $character = $this->characterGenerator->generate($character, $user);
 
-        return $this->json($serializer->serialize($character, 'json', ['ignored_attributes' => ['character', 'user']]));
-    }
+        $em->flush();
 
-    protected function json(mixed $data, int $status = 200, array $headers = [], array $context = []): JsonResponse
-    {
-        $response = new JsonResponse(json_decode($data), $status, $headers);
-        $response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
-        return $response;
+        return $this->json($serializer->serialize($character, 'json', ['ignored_attributes' => ['user', 'character']]));
     }
 
     private function getFormErrors(FormInterface $form): array
@@ -68,5 +59,12 @@ class CreateCharacterController extends AbstractController
         }
 
         return $errors;
+    }
+
+    protected function json(mixed $data, int $status = 200, array $headers = [], array $context = []): JsonResponse
+    {
+        $response = new JsonResponse(json_decode($data), $status, $headers);
+        $response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        return $response;
     }
 }

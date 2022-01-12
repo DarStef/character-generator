@@ -13,12 +13,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ListCharacterController extends AbstractController
 {
-    private CharacterRepository $characterRepository;
-
-    public function __construct(CharacterRepository $characterRepository)
-    {
-
-        $this->characterRepository = $characterRepository;
+    public function __construct(
+        private CharacterRepository $characterRepository,
+    ) {
     }
 
     #[Route('/characters', name: 'characters', methods: 'GET')]

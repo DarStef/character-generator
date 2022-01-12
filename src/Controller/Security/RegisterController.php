@@ -16,13 +16,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RegisterController extends AbstractController
 {
-    private UserRepository $userRepository;
-    private UserPasswordHasherInterface $passwordHasher;
+    public function __construct(
+        private UserRepository $userRepository,
+        private UserPasswordHasherInterface $passwordHasher
+    ) {
 
-    public function __construct(UserRepository $userRepository, UserPasswordHasherInterface $passwordHasher)
-    {
-        $this->userRepository = $userRepository;
-        $this->passwordHasher = $passwordHasher;
     }
 
     #[Route('/security/register', name: 'register', methods: 'POST')]

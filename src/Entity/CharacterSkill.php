@@ -14,7 +14,7 @@ class CharacterSkill //implements \JsonSerializable
     private int $id;
 
     #[ORM\Column(type: 'integer')]
-    private int $value;
+    private ?int $value;
 
     #[ORM\ManyToOne(targetEntity: Skill::class)]
     #[ORM\JoinColumn(name: 'skill_id', referencedColumnName: 'id')]
@@ -34,7 +34,7 @@ class CharacterSkill //implements \JsonSerializable
         return $this->value;
     }
 
-    public function setValue(int $value): self
+    public function setValue(?int $value): self
     {
         $this->value = $value;
 

@@ -2,10 +2,6 @@
 
 namespace App\CharacterGenerator;
 
-
-use App\CharacterGenerator\Enum\FemaleName;
-use App\CharacterGenerator\Enum\MaleName;
-use App\CharacterGenerator\Enum\Surname;
 use App\Entity\Character;
 use App\Entity\CharacterSkill;
 use App\Entity\Skill;
@@ -19,13 +15,12 @@ class CharacterGenerator
 {
     private const MULTIPLIER = 5;
     private ?Character $character = null;
-    private ProfessionRepository $professionRepository;
-    private CharacterRepository $characterRepository;
 
-    public function __construct(ProfessionRepository $professionRepository, CharacterRepository $characterRepository)
-    {
-        $this->professionRepository = $professionRepository;
-        $this->characterRepository = $characterRepository;
+    public function __construct(
+        private ProfessionRepository $professionRepository,
+        private CharacterRepository $characterRepository,
+    ) {
+
     }
 
     public function generate(CharacterDTO $characterDTO, User $user): Character

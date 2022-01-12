@@ -18,11 +18,10 @@ class ApiKeyAuthenticator extends AbstractAuthenticator
 {
     private const HEADER = 'X-AUTH-TOKEN';
 
-    private SessionRepository $sessionRepository;
+    public function __construct(
+        private SessionRepository $sessionRepository
+    ) {
 
-    public function __construct(SessionRepository $sessionRepository)
-    {
-        $this->sessionRepository = $sessionRepository;
     }
 
     public function supports(Request $request): ?bool

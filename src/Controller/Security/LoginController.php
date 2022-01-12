@@ -13,11 +13,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class LoginController extends AbstractController
 {
-    private SessionRepository $sessionRepository;
 
-    public function __construct(SessionRepository $sessionRepository)
-    {
-        $this->sessionRepository = $sessionRepository;
+    public function __construct(
+        private SessionRepository $sessionRepository,
+    ) {
+
     }
 
     #[Route('/security/login', name: 'login', methods: 'POST')]
