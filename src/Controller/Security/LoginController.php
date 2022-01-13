@@ -16,7 +16,8 @@ class LoginController extends AbstractController
 
     public function __construct(
         private SessionRepository $sessionRepository,
-    ) {
+    )
+    {
 
     }
 
@@ -36,10 +37,8 @@ class LoginController extends AbstractController
         }
         $token = $this->addSession($user);
         return $this->json([
-            'login success' => [
-                'user' => $user->getUserIdentifier(),
-                'token' => $token,
-            ],
+            'user' => $user->getUserIdentifier(),
+            'token' => $token,
         ]);
     }
 
